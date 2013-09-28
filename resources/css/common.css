@@ -1,0 +1,44 @@
+/* 
+    Document   : common
+    Created on : 26/09/2013, 11:36:52 PM
+    Author     : egg
+    Description:
+        Purpose of the stylesheet follows.
+*/
+body {
+    font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
+}
+
+h1 a {
+    text-decoration: none;
+    color: #3b5998;
+}
+
+h1 a:hover {
+    text-decoration: underline;
+}
+
+#leftSection {
+    float:left;
+    width:15%;
+    border-radius:25px;
+    border:2px solid;
+    box-shadow: 10px 10px 5px #888888;
+
+}
+
+#rightSection{
+    float:left;
+    width:75%;
+    border-radius:30px;
+    border:2px solid;
+    padding-left:35px;
+    margin-left:30px;
+}
+
+#bodyFrame {
+    height: 100%;
+    width: 100%;
+    padding:0; 
+    border:0;
+}

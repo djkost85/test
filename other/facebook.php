@@ -1,18 +1,16 @@
 <?php
-    # Includes
-    require_once ("init.php");
+ini_set('display_errors', 1);
+    //require('config.php');
+    require_once ('classes/facebook/src/facebook.php');
     
-    Flight::route('*(/@action)', function($action){
-        $action = (empty($action)) ? "login" : $action; 
-
-        Flight::register('template', 'Template', array($action));
-        Flight::template()->startPage();
-    });
+    $facebook = new Facebook(array(
+        'appId'  => '378733102229128',
+        'secret' => 'b603a682687e416fba0dfdbb390a5cd6',
+    ));
     
-    Flight::start();
-?>
+    $user = $facebook->getUser();
 
-   ser) {
+    if ($user) {
         try {
             // Proceed knowing you have a logged in user who's authenticated.
             $user_profile = $facebook->api('/me');
@@ -28,9 +26,6 @@
       $logoutUrl = $facebook->getLogoutUrl();
     else
       $loginUrl = $facebook->getLoginUrl();
-   
-    // This call will always work since we are fetching public data.
-    $naitik = $facebook->api('/naitik');
     
 ?>
 
@@ -75,9 +70,5 @@
     <?php else: ?>
       <strong><em>You are not Connected.</em></strong>
     <?php endif ?>
-
-    <h3>Public profile of Naitik</h3>
-    <img src="https://graph.facebook.com/naitik/picture">
-    <?php echo $naitik['name']; ?>
   </body>
 </html>
