@@ -11,7 +11,7 @@
     
     # General includes
     require_once ("template/template.php");
-    require_once ("classes/include/utils.php");
-    require_once ("classes/external/flight/Flight.php");
-    
+    require_once ("lib/include/utils.php");
+    require_once ("lib/external/flight/Flight.php");
+    require_once ("lib/include/dbTools.php");
 ?>

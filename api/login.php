@@ -1,46 +1,36 @@
 <?php
-    //require_once ("../init.php");
-    require_once ("classes/facebook/src/facebook.php");
+    require_once ("lib/classes/user.class.php");
+    require_once ("lib/external/facebook/src/facebook.php");
     
-    $facebook = new Facebook(array(
-        'appId'  => APP_ID,
-        'secret' => APP_SECRET,
-    ));
+    $loginToken = getParameterString("code");
     
-    $user = $facebook->getUser();
-
-    if ($user) {
-        try {
-            // Proceed knowing you have a logged in user who's authenticated.
-            $user_profile = $facebook->api('/me');
-        } 
-        catch (FacebookApiException $e) {
-            error_log($e);
-            $user = null;
-        }
-    }
+    $db = new dbTool(true);
+    $db->connectContent(true);
+    $user = new User($db);
     
     // Login or logout url will be needed depending on current user state.
-    if ($user) 
-      $logoutUrl = $facebook->getLogoutUrl();
+    if (!empty($loginToken)) 
+    {
+      $user_profile = $user->fb_login();
+      $logoutUrl = $user->fb->getLogoutUrl();
+    }
     else
-      $loginUrl = $facebook->getLoginUrl();
+      $loginUrl = $user->fb->getLoginUrl();
 ?>
 
     <h1>Facebook profile</h1>
 
-    <?php if ($user): ?>
+    <?php if (!empty($loginToken)): ?>
       <a href="<?php echo $logoutUrl; ?>">Logout</a>
     <?php else: ?>
       <div>
-        Login using OAuth 2.0 handled by the PHP SDK:
         <a href="<?php echo $loginUrl; ?>">Login with Facebook</a>
       </div>
     <?php endif ?>
 
     <?php if ($user): ?>
       <h3>You</h3>
-      <img src="https://graph.facebook.com/<?php echo $user; ?>/picture">
+      <img src="https://graph.facebook.com/<?php echo $user_profile['username']; ?>/picture">
 
       <h3>Your User Object (/me)</h3>
       <pre><?php print_r($user_profile); ?></pre>
