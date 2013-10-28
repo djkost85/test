@@ -1,10 +1,15 @@
 <?php
     include_once ("lib/external/facebook/src/facebook.php");
-    
+    include_once ("lib/include/exceptions.php");
+
+    /**
+    * Allows manipulations with users data.
+    */
     class User
     {
         private $db;
         public $fb;
+        public $userData;
         
         function __construct($db)
         {
@@ -16,14 +21,19 @@
             ));
         }
         
+        /**
+        * Authenticates user against facebook API and saves data into the database.
+        * 
+        * @return array An object representing the users's information.
+        */
         public function fb_login()
         {
             $user = $this->fb->getUser();
 
             if ($user) {
-                try 
-                
-{                    // Proceed knowing you have a logged in user who's authenticated.
+                try
+                {
+                    // Proceed knowing you have a logged in user who's authenticated.
                     $user_profile = $this->fb->api('/me');
 
                     $userID = $this->checkUser($user_profile);
@@ -44,7 +54,7 @@
                    $this->setUserData($userID, $user_data);                    
                 } 
                 catch (FacebookApiException $e) {
-                    error_log($e);
+                    $this->throwException($e);
                     $user = null;
                 }
             }
@@ -52,6 +62,41 @@
             return $user_profile;
         }
         
+        public function getDetails($userID = "", $username = "", $email = "")
+        {
+            $sql = "SELECT * FROM `switched_on`.`users` WHERE ";
+            if (!empty($userID))
+            {
+                ParameterException::checkPositiveNumber($userID, "userID");
+                $sql .= "`userID` = $userID";
+            }
+            elseif (!empty($username))
+            {
+                $username = ParameterException::checkStringEsc($username, "Username", $this->db);
+                $sql .= "`fb_username` = '$username'";
+            }
+            elseif (!empty($email))
+            {
+                $email = ParameterException::checkStringEsc($email, "email", $this->db);
+                $sql .= "`email` = '$email'";
+            }
+            else
+            {
+                $this->throwException(new Exception("No identity parameters were provided"));
+            }
+            
+            try 
+            {
+                $userDetails = $this->db->getSingleRowAssoc($sql);
+                
+                return $userDetails;
+            }
+            catch (Exception $e)
+            {
+                $this->throwException($e, false);
+                return null;
+            }
+        }
         
         private function registerUser($user_data)
         {
@@ -68,6 +113,9 @@
         
         private function setUserData($userID, $userData)
         {
+            $this->userData = $userData;
+            $this->userData['userID'] = $userID;
+            
             $setSQL = "";
             foreach ($userData as $key => $value)
             {
@@ -87,7 +135,7 @@
             $first_name = $this->db->escape($user_data['first_name']);
             $last_name = $this->db->escape($user_data['last_name']);
             
-            $sql = "SELECT * FROM switched_on.users WHERE `fb_username` = '$username' AND `first_name` = '$first_name' AND `last_name` = '$last_name'";
+            $sql = "SELECT * FROM `switched_on`.`users` WHERE `fb_username` = '$username' AND `first_name` = '$first_name' AND `last_name` = '$last_name'";
             
             try 
             {
@@ -98,11 +146,11 @@
                 elseif (count($users) == 0)
                     return false;
                 else
-                    throw new Exception ("Duplicate users found.");
+                    $this->throwException(new Exception("Duplicate users found."));
             }
             catch (Exception $e)
             {
-                throw new Exception ("Error occured. {$e->getMessage()})");
+                $this->throwException($e);
             }
         }
         
@@ -120,6 +168,14 @@
             $str = rtrim($str, ", ");
             
             return $str;
+        }
+        
+        private function throwException($e, $throw = true)
+        {
+            error_log("User Class: {$e->getMessage()}");
+            
+            if ($throw)
+                throw new Exception ("{$e->getMessage()} Please refer to the error log for further details");
         }
     }
 ?>

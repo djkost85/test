@@ -1,0 +1,80 @@
+<?php    
+    include_once ("lib/include/exceptions.php");
+
+    class Friends 
+    {
+        private $db;
+        
+        public function __construct($db)
+        {
+            $this->db = $db;
+        }
+        
+        public function addFriend($userID, $friendID, $group = "")
+        {
+            ParameterException::checkPositiveNumber($userID, "User ID");
+            ParameterException::checkPositiveNumber($friendID, "Friend ID");
+            
+            if (!empty($group))
+                $group = ParameterException::checkStringEsc ($group, "Group", $this->db);
+            
+            $sql = "INSERT INTO `switched_on`.`friends_mapping` (`userID`, `friendID`, `group`) VALUES ($userID, $friendID, \"$group\")";
+            
+            try 
+            {
+                $result = $this->db->insert($sql);
+            
+                return true;
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+        
+        public function deleteFriend($userID, $friendID)
+        {
+            ParameterException::checkPositiveNumber($userID, "User ID");
+            ParameterException::checkPositiveNumber($friendID, "Friend ID");
+            
+            $sql = "DELETE FROM `switched_on`.`friends_mapping` WHERE `userID` = $userID AND `friendID` = $friendID";
+            
+            try 
+            {
+        
+                $result = $this->db->delete($sql);
+            
+                return true;
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+        
+        public function listFriends($userID, $group = "")
+        {
+            ParameterException::checkPositiveNumber($userID, "User ID");
+            
+            $groupSQL = "";
+            if (!empty($group))
+            {
+                $group = ParameterException::checkStringEsc ($group, "Group", $this->db);
+                $groupSQL = " AND `group` = \"$group\"";
+                
+            }
+            $sql = "SELECT * FROM `switched_on`.`friends_mapping` WHERE `userID` = $userID $groupSQL";
+            
+            try
+            {
+                $friends = $this->db->getMultidimensionalArray($sql);
+                
+                return $friends;
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+    }
+?>

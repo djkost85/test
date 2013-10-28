@@ -40,23 +40,23 @@ class dbTool
     /**
      * @var string Primary Read Only DB server
      */
-    private $ROHost1="ec2-54-200-3-111.us-west-2.compute.amazonaws.com";
+    private $ROHost1="ec2-54-252-237-204.ap-southeast-2.compute.amazonaws.com";
     /**
      *
      * @var string Backup Read Only DB server
      */
-    private $ROHost2="ec2-54-200-3-111.us-west-2.compute.amazonaws.com";
+    private $ROHost2="ec2-54-252-237-204.ap-southeast-2.compute.amazonaws.com";
     /**
-     *
+     * 
      * @var string Primary Read and Write DB server
      */
-    private $RWHost1="ec2-54-200-3-111.us-west-2.compute.amazonaws.com";
+    private $RWHost1="ec2-54-252-237-204.ap-southeast-2.compute.amazonaws.com";
     /**
      *
-     * @var string Backup Read and Write DB server
+     * @var string Backup Read and Write DB server 
      */
-    private $RWHost2="ec2-54-200-3-111.us-west-2.compute.amazonaws.com";
-
+    private $RWHost2="ec2-54-252-237-204.ap-southeast-2.compute.amazonaws.com";
+ 
     /**
      *
      * @var integer the total number of rows returned from a query

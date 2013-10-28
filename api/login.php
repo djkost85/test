@@ -28,11 +28,11 @@
       </div>
     <?php endif ?>
 
-    <?php if ($user): ?>
+    <?php if (!empty($user_profile)): ?>
       <h3>You</h3>
       <img src="https://graph.facebook.com/<?php echo $user_profile['username']; ?>/picture">
 
-      <h3>Your User Object (/me)</h3>
+      <h3>Your User Object</h3>
       <pre><?php print_r($user_profile); ?></pre>
     <?php else: ?>
       <strong><em>You are not Connected.</em></strong>
